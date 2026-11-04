@@ -7,7 +7,12 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "oxlint",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "coverage": "vitest run --coverage",
+    "test:e2e": "playwright test",
+    "typecheck": "tsc -b"
   },
   "dependencies": {
     "react": "^19.3.1",
