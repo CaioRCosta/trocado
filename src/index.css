@@ -165,7 +165,7 @@ h2 {
 
 .field-row {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
   gap: 0.75rem;
 }
 
@@ -178,6 +178,7 @@ select {
   border-radius: 8px;
   padding: 0.5rem 0.65rem;
   min-width: 0;
+  width: 100%;
 }
 
 input[aria-invalid='true'] {
@@ -273,6 +274,10 @@ button {
 
 /* Filtro */
 
+.month-filter select {
+  width: auto;
+}
+
 .month-filter {
   display: flex;
   align-items: center;
@@ -319,11 +324,11 @@ button {
   font-weight: 700;
 }
 
-.income {
+.balance-split .income {
   color: var(--income);
 }
 
-.expense {
+.balance-split .expense {
   color: var(--expense);
 }
 
