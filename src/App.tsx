@@ -12,22 +12,17 @@ import {
   formatMonthLabel,
   sortByDateDesc,
 } from './domain/summary'
+import { toLocalIsoDate } from './domain/date'
 import { useTransactions } from './hooks/useTransactions'
-
-/** Data local no formato `AAAA-MM-DD`. */
-export function toLocalIsoDate(date: Date): string {
-  const pad = (n: number) => String(n).padStart(2, '0')
-  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`
-}
 
 interface Props {
   now?: Date
 }
 
-export default function App({ now = new Date() }: Props) {
+export default function App({ now }: Props) {
   const { transactions, addTransaction, removeTransaction } = useTransactions()
   const [selectedMonth, setMonth] = useState<string | null>(null)
-  const today = toLocalIsoDate(now)
+  const [today] = useState(() => toLocalIsoDate(now ?? new Date()))
 
   const months = useMemo(() => availableMonths(transactions), [transactions])
   // Se o mês escolhido ficou sem transações (todas excluídas), volta a mostrar tudo.

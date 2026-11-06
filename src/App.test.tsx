@@ -1,7 +1,7 @@
 import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it } from 'vitest'
-import App, { toLocalIsoDate } from './App'
+import App from './App'
 import { saveTransactions } from './storage/transactionStorage'
 
 const now = new Date(2026, 10, 4)
@@ -48,11 +48,5 @@ describe('App', () => {
 
     expect(screen.getByLabelText('Período')).toHaveValue('all')
     expect(screen.getByText('Farmácia')).toBeInTheDocument()
-  })
-})
-
-describe('toLocalIsoDate', () => {
-  it('formata a data local com zeros à esquerda', () => {
-    expect(toLocalIsoDate(new Date(2026, 0, 7))).toBe('2026-01-07')
   })
 })
