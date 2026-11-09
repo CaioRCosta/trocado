@@ -272,6 +272,35 @@ button {
   border-color: var(--line);
 }
 
+.danger {
+  border: 0;
+  border-radius: 6px;
+  padding: 0.25rem 0.6rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  background: var(--expense);
+  color: #fff;
+}
+
+.tx-list li:has(.tx-confirm) {
+  grid-template-columns: 1fr auto;
+}
+
+.tx-amount {
+  white-space: nowrap;
+}
+
+.tx-confirm {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: var(--expense);
+  font-weight: 700;
+}
+
 /* Filtro */
 
 .month-filter select {
