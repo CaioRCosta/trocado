@@ -4,7 +4,7 @@
 
 Controle simples de receitas e despesas pessoais. Anote o que entra e o que sai, e veja para onde vai cada real.
 
-**Em produção:** https://LINK-DA-VERCEL
+**Em produção:** https://trocado-es2.vercel.app
 
 ## Integrantes
 
