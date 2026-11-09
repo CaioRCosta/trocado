@@ -37,4 +37,25 @@ describe('TransactionList', () => {
 
     expect(onRemove).toHaveBeenCalledWith('r1')
   })
+
+  it('não exclui nada quando o usuário cancela a confirmação', async () => {
+    const onRemove = vi.fn()
+    render(<TransactionList transactions={[rent]} onRemove={onRemove} />)
+
+    await userEvent.click(screen.getByRole('button', { name: 'Excluir Aluguel' }))
+    await userEvent.click(screen.getByRole('button', { name: 'Cancelar' }))
+
+    expect(onRemove).not.toHaveBeenCalled()
+    expect(screen.getByRole('button', { name: 'Excluir Aluguel' })).toBeInTheDocument()
+  })
+
+  it('não apaga na hora: o primeiro clique só pede confirmação', async () => {
+    const onRemove = vi.fn()
+    render(<TransactionList transactions={[rent]} onRemove={onRemove} />)
+
+    await userEvent.click(screen.getByRole('button', { name: 'Excluir Aluguel' }))
+
+    expect(onRemove).not.toHaveBeenCalled()
+    expect(screen.getByRole('group', { name: 'Confirmar exclusão de Aluguel' })).toBeInTheDocument()
+  })
 })
