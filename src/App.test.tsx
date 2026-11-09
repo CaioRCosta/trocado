@@ -45,6 +45,7 @@ describe('App', () => {
 
     await user.selectOptions(screen.getByLabelText('Período'), 'outubro de 2026')
     await user.click(screen.getByRole('button', { name: 'Excluir Cinema' }))
+    await user.click(screen.getByRole('button', { name: 'Sim, excluir' }))
 
     expect(screen.getByLabelText('Período')).toHaveValue('all')
     expect(screen.getByText('Farmácia')).toBeInTheDocument()

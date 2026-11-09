@@ -28,11 +28,12 @@ describe('TransactionList', () => {
     expect(screen.getByText('Moradia, 06/11/2026')).toBeInTheDocument()
   })
 
-  it('pede a exclusão da transação clicada', async () => {
+  it('exclui a transação depois que o usuário confirma', async () => {
     const onRemove = vi.fn()
     render(<TransactionList transactions={[rent]} onRemove={onRemove} />)
 
     await userEvent.click(screen.getByRole('button', { name: 'Excluir Aluguel' }))
+    await userEvent.click(screen.getByRole('button', { name: 'Sim, excluir' }))
 
     expect(onRemove).toHaveBeenCalledWith('r1')
   })

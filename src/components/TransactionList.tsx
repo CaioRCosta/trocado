@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { formatCents } from '../domain/money'
 import { signedAmount, type Transaction } from '../domain/transaction'
 
@@ -12,6 +13,8 @@ function formatDay(date: string): string {
 }
 
 export function TransactionList({ transactions, onRemove }: Props) {
+  const [confirmingId, setConfirmingId] = useState<string | null>(null)
+
   return (
     <section className="tx-list" aria-labelledby="list-title">
       <h2 id="list-title">Transações</h2>
@@ -28,14 +31,26 @@ export function TransactionList({ transactions, onRemove }: Props) {
                 </span>
               </div>
               <span className="tx-amount num">{formatCents(signedAmount(t))}</span>
-              <button
-                type="button"
-                className="ghost"
-                onClick={() => onRemove(t.id)}
-                aria-label={`Excluir ${t.description}`}
-              >
-                Excluir
-              </button>
+              {confirmingId === t.id ? (
+                <div className="tx-confirm" role="group" aria-label={`Confirmar exclusão de ${t.description}`}>
+                  <span>Excluir?</span>
+                  <button type="button" className="danger" onClick={() => onRemove(t.id)}>
+                    Sim, excluir
+                  </button>
+                  <button type="button" className="ghost" onClick={() => setConfirmingId(null)}>
+                    Cancelar
+                  </button>
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  className="ghost"
+                  onClick={() => setConfirmingId(t.id)}
+                  aria-label={`Excluir ${t.description}`}
+                >
+                  Excluir
+                </button>
+              )}
             </li>
           ))}
         </ul>

@@ -46,6 +46,7 @@ test('exclui uma transação e atualiza o saldo', async ({ page }) => {
   await addTransaction(page, { type: 'Despesa', description: 'Pizza', amount: '80', category: 'Alimentação' })
 
   await page.getByRole('button', { name: 'Excluir Cinema' }).click()
+  await page.getByRole('group', { name: 'Confirmar exclusão de Cinema' }).getByRole('button', { name: 'Sim, excluir' }).click()
 
   await expect(transactionList(page).getByText('Cinema')).toHaveCount(0)
   await expect(transactionList(page).getByText('Pizza')).toBeVisible()
