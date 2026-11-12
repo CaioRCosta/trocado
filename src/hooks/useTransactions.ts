@@ -21,9 +21,13 @@ export function useTransactions(generateId: () => string = defaultIdGenerator) {
     [generateId],
   )
 
+  const updateTransaction = useCallback((id: string, data: NewTransaction) => {
+    setTransactions((current) => current.map((t) => (t.id === id ? { ...data, id } : t)))
+  }, [])
+
   const removeTransaction = useCallback((id: string) => {
     setTransactions((current) => current.filter((t) => t.id !== id))
   }, [])
 
-  return { transactions, addTransaction, removeTransaction }
+  return { transactions, addTransaction, updateTransaction, removeTransaction }
 }
