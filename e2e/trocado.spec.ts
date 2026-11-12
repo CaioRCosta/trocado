@@ -83,3 +83,17 @@ test('mostra a participação de cada categoria nas despesas', async ({ page }) 
   await expect(breakdown.getByRole('listitem').first()).toContainText('(75%)')
   await expect(breakdown.getByRole('listitem').nth(1)).toContainText('(25%)')
 })
+
+test('edita uma transação e recalcula o saldo', async ({ page }) => {
+  await addTransaction(page, { type: 'Despesa', description: 'Academia', amount: '99,90', category: 'Saúde' })
+
+  await page.getByRole('button', { name: 'Editar Academia' }).click()
+  await expect(page.getByRole('heading', { name: 'Editar transação' })).toBeVisible()
+  await page.getByLabel('Descrição').fill('Academia anual')
+  await page.getByLabel('Valor (R$)').fill('1.198,80')
+  await page.getByRole('button', { name: 'Salvar alterações' }).click()
+
+  await expect(transactionList(page).getByText('Academia anual')).toBeVisible()
+  await expect(page.getByTestId('balance')).toHaveText('-R$ 1.198,80')
+  await expect(page.getByRole('heading', { name: 'Nova transação' })).toBeVisible()
+})
