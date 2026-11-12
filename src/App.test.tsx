@@ -50,4 +50,23 @@ describe('App', () => {
     expect(screen.getByLabelText('Período')).toHaveValue('all')
     expect(screen.getByText('Farmácia')).toBeInTheDocument()
   })
+
+  it('salva a edição e volta o formulário para nova transação', async () => {
+    saveTransactions([
+      { id: '1', description: 'Cinema', amountCents: 5000, type: 'expense', category: 'Lazer', date: '2026-11-02' },
+    ])
+    const user = userEvent.setup()
+    render(<App now={now} />)
+
+    await user.click(screen.getByRole('button', { name: 'Editar Cinema' }))
+    await user.clear(screen.getByLabelText('Descrição'))
+    await user.type(screen.getByLabelText('Descrição'), 'Teatro')
+    await user.click(screen.getByRole('button', { name: 'Salvar alterações' }))
+
+    const list = screen.getByRole('region', { name: 'Transações' })
+    expect(within(list).getByText('Teatro')).toBeInTheDocument()
+    expect(within(list).queryByText('Cinema')).not.toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Nova transação' })).toBeInTheDocument()
+    expect(screen.getByTestId('balance')).toHaveTextContent('-R$ 50,00')
+  })
 })

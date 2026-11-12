@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { formatCents, parseAmountToCents } from './money'
+import { formatCents, formatCentsAsInput, parseAmountToCents } from './money'
 
 describe('parseAmountToCents', () => {
   it('converte um valor inteiro em centavos', () => {
@@ -38,5 +38,16 @@ describe('formatCents', () => {
 
   it('formata valores negativos', () => {
     expect(formatCents(-300)).toBe('-R$ 3,00')
+  })
+})
+
+describe('formatCentsAsInput', () => {
+  it('gera o texto que o formulário aceita de volta', () => {
+    expect(formatCentsAsInput(123456)).toBe('1234,56')
+    expect(parseAmountToCents(formatCentsAsInput(123456))).toBe(123456)
+  })
+
+  it('completa os centavos com zero à esquerda', () => {
+    expect(formatCentsAsInput(705)).toBe('7,05')
   })
 })

@@ -58,4 +58,13 @@ describe('TransactionList', () => {
     expect(onRemove).not.toHaveBeenCalled()
     expect(screen.getByRole('group', { name: 'Confirmar exclusão de Aluguel' })).toBeInTheDocument()
   })
+
+  it('pede a edição da transação clicada', async () => {
+    const onEdit = vi.fn()
+    render(<TransactionList transactions={[rent]} onRemove={() => {}} onEdit={onEdit} />)
+
+    await userEvent.click(screen.getByRole('button', { name: 'Editar Aluguel' }))
+
+    expect(onEdit).toHaveBeenCalledWith('r1')
+  })
 })
