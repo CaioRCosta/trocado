@@ -41,4 +41,18 @@ describe('useTransactions', () => {
     expect(result.current.transactions.map((t) => t.id)).toEqual(['fica'])
     expect(loadTransactions().map((t) => t.id)).toEqual(['fica'])
   })
+
+  it('atualiza os dados de uma transação mantendo o identificador e a posição', () => {
+    saveTransactions([
+      { ...groceries, id: 'a' },
+      { ...groceries, id: 'b' },
+    ])
+    const { result } = renderHook(() => useTransactions())
+
+    act(() => result.current.updateTransaction('a', { ...groceries, description: 'Feira', amountCents: 4500 }))
+
+    expect(result.current.transactions[0]).toEqual({ ...groceries, id: 'a', description: 'Feira', amountCents: 4500 })
+    expect(result.current.transactions[1]).toEqual({ ...groceries, id: 'b' })
+    expect(loadTransactions()[0].description).toBe('Feira')
+  })
 })
