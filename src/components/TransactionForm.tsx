@@ -1,7 +1,9 @@
-import { useState, type FormEvent } from 'react'
+import { useEffect, useRef, useState, type FormEvent } from 'react'
+import { formatCentsAsInput } from '../domain/money'
 import {
   CATEGORIES,
   validateTransaction,
+  type Transaction,
   type TransactionErrors,
   type TransactionInput,
   type TransactionType,
@@ -9,18 +11,39 @@ import {
 import type { NewTransaction } from '../hooks/useTransactions'
 
 interface Props {
-  onAdd: (transaction: NewTransaction) => void
+  onSubmit: (transaction: NewTransaction) => void
   /** Data inicial do formulário no formato `AAAA-MM-DD`. */
   today: string
+  /** Transação sendo editada; ausente ao cadastrar uma nova. */
+  editing?: Transaction
+  onCancelEdit?: () => void
 }
 
 function emptyInput(type: TransactionType, today: string): TransactionInput {
   return { description: '', amount: '', type, category: CATEGORIES[type][0], date: today }
 }
 
-export function TransactionForm({ onAdd, today }: Props) {
-  const [input, setInput] = useState<TransactionInput>(() => emptyInput('expense', today))
+function inputFrom(transaction: Transaction): TransactionInput {
+  return {
+    description: transaction.description,
+    amount: formatCentsAsInput(transaction.amountCents),
+    type: transaction.type,
+    category: transaction.category,
+    date: transaction.date,
+  }
+}
+
+export function TransactionForm({ onSubmit, today, editing, onCancelEdit }: Props) {
+  const [input, setInput] = useState<TransactionInput>(() =>
+    editing ? inputFrom(editing) : emptyInput('expense', today),
+  )
   const [errors, setErrors] = useState<TransactionErrors>({})
+  const descriptionRef = useRef<HTMLInputElement>(null)
+  const title = editing ? 'Editar transação' : 'Nova transação'
+
+  useEffect(() => {
+    if (editing) descriptionRef.current?.focus()
+  }, [editing])
 
   function update<K extends keyof TransactionInput>(field: K, value: TransactionInput[K]) {
     setInput((current) => ({ ...current, [field]: value }))
@@ -37,14 +60,14 @@ export function TransactionForm({ onAdd, today }: Props) {
       setErrors(result.errors)
       return
     }
-    onAdd(result.value)
+    onSubmit(result.value)
     setErrors({})
     setInput({ ...emptyInput(input.type, today), date: input.date })
   }
 
   return (
-    <form className="tx-form" onSubmit={handleSubmit} noValidate aria-label="Nova transação">
-      <h2>Nova transação</h2>
+    <form className={editing ? 'tx-form is-editing' : 'tx-form'} onSubmit={handleSubmit} noValidate aria-label={title}>
+      <h2>{title}</h2>
 
       <fieldset className="type-toggle">
         <legend>Tipo</legend>
@@ -73,6 +96,7 @@ export function TransactionForm({ onAdd, today }: Props) {
       <Field id="description" label="Descrição" error={errors.description}>
         <input
           id="description"
+          ref={descriptionRef}
           value={input.description}
           onChange={(e) => update('description', e.target.value)}
           placeholder="Ex.: Mercado da semana"
@@ -117,8 +141,13 @@ export function TransactionForm({ onAdd, today }: Props) {
       </Field>
 
       <button type="submit" className="primary">
-        Adicionar {input.type === 'expense' ? 'despesa' : 'receita'}
+        {editing ? 'Salvar alterações' : `Adicionar ${input.type === 'expense' ? 'despesa' : 'receita'}`}
       </button>
+      {editing && (
+        <button type="button" className="ghost" onClick={onCancelEdit}>
+          Cancelar edição
+        </button>
+      )}
     </form>
   )
 }

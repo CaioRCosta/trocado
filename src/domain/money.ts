@@ -20,3 +20,8 @@ export function parseAmountToCents(input: string): number | null {
 export function formatCents(cents: number): string {
   return brlFormatter.format(cents / 100).replace(/ /g, ' ')
 }
+
+/** Converte centavos no texto aceito pelo formulário (ex.: 123456 → "1234,56"). */
+export function formatCentsAsInput(cents: number): string {
+  return `${Math.floor(cents / 100)},${String(cents % 100).padStart(2, '0')}`
+}

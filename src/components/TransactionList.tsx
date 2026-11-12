@@ -5,6 +5,7 @@ import { signedAmount, type Transaction } from '../domain/transaction'
 interface Props {
   transactions: Transaction[]
   onRemove: (id: string) => void
+  onEdit: (id: string) => void
 }
 
 function formatDay(date: string): string {
@@ -12,7 +13,7 @@ function formatDay(date: string): string {
   return `${day}/${month}/${year}`
 }
 
-export function TransactionList({ transactions, onRemove }: Props) {
+export function TransactionList({ transactions, onRemove, onEdit }: Props) {
   const [confirmingId, setConfirmingId] = useState<string | null>(null)
 
   return (
@@ -42,14 +43,24 @@ export function TransactionList({ transactions, onRemove }: Props) {
                   </button>
                 </div>
               ) : (
-                <button
-                  type="button"
-                  className="ghost"
-                  onClick={() => setConfirmingId(t.id)}
-                  aria-label={`Excluir ${t.description}`}
-                >
-                  Excluir
-                </button>
+                <div className="tx-actions">
+                  <button
+                    type="button"
+                    className="ghost"
+                    onClick={() => onEdit(t.id)}
+                    aria-label={`Editar ${t.description}`}
+                  >
+                    Editar
+                  </button>
+                  <button
+                    type="button"
+                    className="ghost"
+                    onClick={() => setConfirmingId(t.id)}
+                    aria-label={`Excluir ${t.description}`}
+                  >
+                    Excluir
+                  </button>
+                </div>
               )}
             </li>
           ))}

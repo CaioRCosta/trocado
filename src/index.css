@@ -290,6 +290,16 @@ button {
   white-space: nowrap;
 }
 
+.tx-actions {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.tx-form.is-editing {
+  border-color: var(--brass);
+  box-shadow: inset 0 0 0 1px var(--brass);
+}
+
 .tx-confirm {
   grid-column: 1 / -1;
   display: flex;
@@ -439,4 +449,16 @@ button {
 
 .tx-list li.expense .tx-amount {
   color: var(--expense);
+}
+
+@media (max-width: 520px) {
+  .tx-list li {
+    grid-template-columns: 1fr auto;
+  }
+
+  .tx-actions {
+    grid-column: 1 / -1;
+    justify-content: flex-end;
+    margin-top: -0.35rem;
+  }
 }

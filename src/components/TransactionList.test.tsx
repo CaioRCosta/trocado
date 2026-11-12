@@ -15,13 +15,13 @@ const rent: Transaction = {
 
 describe('TransactionList', () => {
   it('convida a registrar a primeira transação quando a lista está vazia', () => {
-    render(<TransactionList transactions={[]} onRemove={() => {}} />)
+    render(<TransactionList transactions={[]} onRemove={() => {}} onEdit={() => {}} />)
 
     expect(screen.getByText(/Nenhuma transação ainda/)).toBeInTheDocument()
   })
 
   it('mostra despesas com sinal negativo, categoria e data no formato brasileiro', () => {
-    render(<TransactionList transactions={[rent]} onRemove={() => {}} />)
+    render(<TransactionList transactions={[rent]} onRemove={() => {}} onEdit={() => {}} />)
 
     expect(screen.getByText('Aluguel')).toBeInTheDocument()
     expect(screen.getByText('-R$ 1.800,00')).toBeInTheDocument()
@@ -30,7 +30,7 @@ describe('TransactionList', () => {
 
   it('exclui a transação depois que o usuário confirma', async () => {
     const onRemove = vi.fn()
-    render(<TransactionList transactions={[rent]} onRemove={onRemove} />)
+    render(<TransactionList transactions={[rent]} onRemove={onRemove} onEdit={() => {}} />)
 
     await userEvent.click(screen.getByRole('button', { name: 'Excluir Aluguel' }))
     await userEvent.click(screen.getByRole('button', { name: 'Sim, excluir' }))
@@ -40,7 +40,7 @@ describe('TransactionList', () => {
 
   it('não exclui nada quando o usuário cancela a confirmação', async () => {
     const onRemove = vi.fn()
-    render(<TransactionList transactions={[rent]} onRemove={onRemove} />)
+    render(<TransactionList transactions={[rent]} onRemove={onRemove} onEdit={() => {}} />)
 
     await userEvent.click(screen.getByRole('button', { name: 'Excluir Aluguel' }))
     await userEvent.click(screen.getByRole('button', { name: 'Cancelar' }))
@@ -51,7 +51,7 @@ describe('TransactionList', () => {
 
   it('não apaga na hora: o primeiro clique só pede confirmação', async () => {
     const onRemove = vi.fn()
-    render(<TransactionList transactions={[rent]} onRemove={onRemove} />)
+    render(<TransactionList transactions={[rent]} onRemove={onRemove} onEdit={() => {}} />)
 
     await userEvent.click(screen.getByRole('button', { name: 'Excluir Aluguel' }))
 

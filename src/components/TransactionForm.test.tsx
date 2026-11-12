@@ -4,21 +4,21 @@ import { describe, expect, it, vi } from 'vitest'
 import { TransactionForm } from './TransactionForm'
 
 function setup() {
-  const onAdd = vi.fn()
-  render(<TransactionForm onAdd={onAdd} today="2026-11-04" />)
-  return { onAdd, user: userEvent.setup() }
+  const onSubmit = vi.fn()
+  render(<TransactionForm onSubmit={onSubmit} today="2026-11-04" />)
+  return { onSubmit, user: userEvent.setup() }
 }
 
 describe('TransactionForm', () => {
   it('envia uma despesa válida com o valor em centavos', async () => {
-    const { onAdd, user } = setup()
+    const { onSubmit, user } = setup()
 
     await user.type(screen.getByLabelText('Descrição'), 'Almoço')
     await user.type(screen.getByLabelText('Valor (R$)'), '32,90')
     await user.selectOptions(screen.getByLabelText('Categoria'), 'Alimentação')
     await user.click(screen.getByRole('button', { name: 'Adicionar despesa' }))
 
-    expect(onAdd).toHaveBeenCalledWith({
+    expect(onSubmit).toHaveBeenCalledWith({
       description: 'Almoço',
       amountCents: 3290,
       type: 'expense',
@@ -28,11 +28,11 @@ describe('TransactionForm', () => {
   })
 
   it('mostra os erros e não envia quando os dados são inválidos', async () => {
-    const { onAdd, user } = setup()
+    const { onSubmit, user } = setup()
 
     await user.click(screen.getByRole('button', { name: 'Adicionar despesa' }))
 
-    expect(onAdd).not.toHaveBeenCalled()
+    expect(onSubmit).not.toHaveBeenCalled()
     expect(screen.getByText('Informe uma descrição.')).toBeInTheDocument()
     expect(screen.getByLabelText('Valor (R$)')).toHaveAttribute('aria-invalid', 'true')
   })

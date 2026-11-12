@@ -13,14 +13,15 @@ import {
   sortByDateDesc,
 } from './domain/summary'
 import { toLocalIsoDate } from './domain/date'
-import { useTransactions } from './hooks/useTransactions'
+import { useTransactions, type NewTransaction } from './hooks/useTransactions'
 
 interface Props {
   now?: Date
 }
 
 export default function App({ now }: Props) {
-  const { transactions, addTransaction, removeTransaction } = useTransactions()
+  const { transactions, addTransaction, updateTransaction, removeTransaction } = useTransactions()
+  const [editingId, setEditingId] = useState<string | null>(null)
   const [selectedMonth, setMonth] = useState<string | null>(null)
   const [today] = useState(() => toLocalIsoDate(now ?? new Date()))
 
@@ -30,6 +31,16 @@ export default function App({ now }: Props) {
   const visible = useMemo(() => sortByDateDesc(filterByMonth(transactions, month)), [transactions, month])
   const totals = useMemo(() => calculateTotals(visible), [visible])
   const categories = useMemo(() => expensesByCategory(visible), [visible])
+  const editing = transactions.find((t) => t.id === editingId)
+
+  function handleSubmit(data: NewTransaction) {
+    if (editing) {
+      updateTransaction(editing.id, data)
+      setEditingId(null)
+    } else {
+      addTransaction(data)
+    }
+  }
 
   return (
     <div className="app">
@@ -40,14 +51,20 @@ export default function App({ now }: Props) {
 
       <main className="layout">
         <aside className="form-column">
-          <TransactionForm onAdd={addTransaction} today={today} />
+          <TransactionForm
+            key={editing?.id ?? 'nova'}
+            onSubmit={handleSubmit}
+            today={today}
+            editing={editing}
+            onCancelEdit={() => setEditingId(null)}
+          />
         </aside>
 
         <div className="content-column">
           <MonthFilter months={months} selected={month} onChange={setMonth} />
           <BalanceSummary totals={totals} periodLabel={month ? formatMonthLabel(month) : 'todos os meses'} />
           <CategoryBreakdown categories={categories} />
-          <TransactionList transactions={visible} onRemove={removeTransaction} />
+          <TransactionList transactions={visible} onRemove={removeTransaction} onEdit={setEditingId} />
         </div>
       </main>
     </div>
