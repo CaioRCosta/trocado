@@ -423,6 +423,32 @@ button {
   margin: 0;
 }
 
+.tx-list-tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.75rem;
+}
+
+.secondary {
+  border: 1px solid var(--ink);
+  border-radius: 8px;
+  padding: 0.45rem 0.8rem;
+  background: none;
+  color: var(--ink);
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.secondary:hover:not(:disabled) {
+  background: var(--paper-raised);
+}
+
+.secondary:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
 .search-field {
   display: flex;
   align-items: center;

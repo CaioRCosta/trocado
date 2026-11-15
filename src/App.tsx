@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { BalanceSummary } from './components/BalanceSummary'
 import { CategoryBreakdown } from './components/CategoryBreakdown'
+import { ExportButton } from './components/ExportButton'
 import { MonthFilter } from './components/MonthFilter'
 import { SearchField } from './components/SearchField'
 import { TransactionForm } from './components/TransactionForm'
@@ -74,7 +75,10 @@ export default function App({ now }: Props) {
             onEdit={setEditingId}
             emptyMessage={query.trim() ? `Nenhuma transação encontrada para “${query.trim()}”.` : undefined}
           >
-            <SearchField value={query} onChange={setQuery} />
+            <div className="tx-list-tools">
+              <SearchField value={query} onChange={setQuery} />
+              <ExportButton transactions={listed} fileName={`trocado-${month ?? 'todos-os-meses'}.csv`} />
+            </div>
           </TransactionList>
         </div>
       </main>
