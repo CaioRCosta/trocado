@@ -69,4 +69,32 @@ describe('App', () => {
     expect(screen.getByRole('heading', { name: 'Nova transação' })).toBeInTheDocument()
     expect(screen.getByTestId('balance')).toHaveTextContent('-R$ 50,00')
   })
+
+  it('filtra a lista pela busca sem alterar o saldo do período', async () => {
+    saveTransactions([
+      { id: '1', description: 'Cinema', amountCents: 5000, type: 'expense', category: 'Lazer', date: '2026-11-02' },
+      { id: '2', description: 'Farmácia', amountCents: 2000, type: 'expense', category: 'Saúde', date: '2026-11-03' },
+    ])
+    const user = userEvent.setup()
+    render(<App now={now} />)
+
+    await user.type(screen.getByLabelText('Buscar'), 'farmacia')
+
+    const list = screen.getByRole('region', { name: 'Transações' })
+    expect(within(list).getByText('Farmácia')).toBeInTheDocument()
+    expect(within(list).queryByText('Cinema')).not.toBeInTheDocument()
+    expect(screen.getByTestId('balance')).toHaveTextContent('-R$ 70,00')
+  })
+
+  it('avisa quando a busca não encontra nada', async () => {
+    saveTransactions([
+      { id: '1', description: 'Cinema', amountCents: 5000, type: 'expense', category: 'Lazer', date: '2026-11-02' },
+    ])
+    const user = userEvent.setup()
+    render(<App now={now} />)
+
+    await user.type(screen.getByLabelText('Buscar'), 'viagem')
+
+    expect(screen.getByText('Nenhuma transação encontrada para “viagem”.')).toBeInTheDocument()
+  })
 })
