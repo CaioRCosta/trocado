@@ -20,7 +20,10 @@ O Trocado é uma aplicação web de página única para registrar a movimentaç�
 - **Saldo do período**: total que entrou, total que saiu e saldo, com destaque quando o saldo fica negativo.
 - **Filtro por mês**: escolha um mês para ver só as transações, o saldo e o resumo daquele período.
 - **Para onde foi o dinheiro**: despesas agrupadas por categoria, com total, percentual e barra proporcional.
-- **Excluir transações** registradas por engano.
+- **Editar transações**: o formulário abre preenchido com os dados da transação escolhida.
+- **Excluir transações** registradas por engano, com confirmação antes de apagar.
+- **Buscar** por descrição ou categoria, sem diferenciar maiúsculas nem acentos.
+- **Exportar em CSV** as transações listadas, no padrão brasileiro (separador `;` e vírgula decimal), pronto para abrir no Excel ou no Google Planilhas.
 - **Persistência local**: os dados ficam salvos no `localStorage` do navegador e continuam lá depois de recarregar a página.
 
 ## Tecnologias
@@ -42,11 +45,12 @@ O Trocado é uma aplicação web de página única para registrar a movimentaç�
 
 ```
 src/
-  domain/      regras de negócio puras (valores, validação, resumos, datas)
+  domain/      regras de negócio puras (valores, validação, resumos, busca, CSV, datas)
   storage/     leitura e gravação no localStorage
   hooks/       estado das transações sincronizado com o armazenamento
   components/  componentes React da interface
   App.tsx      tela principal
+  download.ts  download de arquivos gerados no navegador
 e2e/           testes end-to-end com Playwright
 ```
 
