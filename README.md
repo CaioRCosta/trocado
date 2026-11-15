@@ -96,3 +96,12 @@ npm run build      # build de produção em dist/
 npm run lint       # análise estática
 npm run typecheck  # verificação de tipos
 ```
+### Uso de IA
+
+O projeto contou com o apoio da inteligência artificial (Claude, da Anthropic) em etapas específicas do desenvolvimento. A IA contribuiu para:
+- corrigir bugs e problemas encontrados durante a etapa de desenvolvimento;
+- auxiliar no desenvolvimento do frontend;
+- ajuda para entender bibliotecas específicas de teste;
+
+
+Todas as demais decisões de design, implementação, escrita, revisão e validação final do código foram integralmente realizadas pelos alunos.
