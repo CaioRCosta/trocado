@@ -410,6 +410,35 @@ button {
 
 /* Lista */
 
+.tx-list-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.tx-list-head h2 {
+  margin: 0;
+}
+
+.search-field {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.search-field label {
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.search-field input {
+  width: 14rem;
+  max-width: 100%;
+}
+
 .tx-list li {
   display: grid;
   grid-template-columns: 1fr auto auto;

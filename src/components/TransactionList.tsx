@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, type ReactNode } from 'react'
 import { formatCents } from '../domain/money'
 import { signedAmount, type Transaction } from '../domain/transaction'
 
@@ -6,21 +6,36 @@ interface Props {
   transactions: Transaction[]
   onRemove: (id: string) => void
   onEdit: (id: string) => void
+  /** Mensagem mostrada quando não há transações para exibir. */
+  emptyMessage?: string
+  /** Controles exibidos ao lado do título, como a busca. */
+  children?: ReactNode
 }
+
+const DEFAULT_EMPTY_MESSAGE = 'Nenhuma transação ainda. Use o formulário para registrar a primeira.'
 
 function formatDay(date: string): string {
   const [year, month, day] = date.split('-')
   return `${day}/${month}/${year}`
 }
 
-export function TransactionList({ transactions, onRemove, onEdit }: Props) {
+export function TransactionList({
+  transactions,
+  onRemove,
+  onEdit,
+  emptyMessage = DEFAULT_EMPTY_MESSAGE,
+  children,
+}: Props) {
   const [confirmingId, setConfirmingId] = useState<string | null>(null)
 
   return (
     <section className="tx-list" aria-labelledby="list-title">
-      <h2 id="list-title">Transações</h2>
+      <div className="tx-list-head">
+        <h2 id="list-title">Transações</h2>
+        {children}
+      </div>
       {transactions.length === 0 ? (
-        <p className="muted">Nenhuma transação ainda. Use o formulário para registrar a primeira.</p>
+        <p className="muted">{emptyMessage}</p>
       ) : (
         <ul>
           {transactions.map((t) => (

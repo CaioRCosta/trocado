@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { BalanceSummary } from './components/BalanceSummary'
 import { CategoryBreakdown } from './components/CategoryBreakdown'
 import { MonthFilter } from './components/MonthFilter'
+import { SearchField } from './components/SearchField'
 import { TransactionForm } from './components/TransactionForm'
 import { TransactionList } from './components/TransactionList'
 import {
@@ -13,6 +14,7 @@ import {
   sortByDateDesc,
 } from './domain/summary'
 import { toLocalIsoDate } from './domain/date'
+import { searchTransactions } from './domain/search'
 import { useTransactions, type NewTransaction } from './hooks/useTransactions'
 
 interface Props {
@@ -22,6 +24,7 @@ interface Props {
 export default function App({ now }: Props) {
   const { transactions, addTransaction, updateTransaction, removeTransaction } = useTransactions()
   const [editingId, setEditingId] = useState<string | null>(null)
+  const [query, setQuery] = useState('')
   const [selectedMonth, setMonth] = useState<string | null>(null)
   const [today] = useState(() => toLocalIsoDate(now ?? new Date()))
 
@@ -31,6 +34,7 @@ export default function App({ now }: Props) {
   const visible = useMemo(() => sortByDateDesc(filterByMonth(transactions, month)), [transactions, month])
   const totals = useMemo(() => calculateTotals(visible), [visible])
   const categories = useMemo(() => expensesByCategory(visible), [visible])
+  const listed = useMemo(() => searchTransactions(visible, query), [visible, query])
   const editing = transactions.find((t) => t.id === editingId)
 
   function handleSubmit(data: NewTransaction) {
@@ -64,7 +68,14 @@ export default function App({ now }: Props) {
           <MonthFilter months={months} selected={month} onChange={setMonth} />
           <BalanceSummary totals={totals} periodLabel={month ? formatMonthLabel(month) : 'todos os meses'} />
           <CategoryBreakdown categories={categories} />
-          <TransactionList transactions={visible} onRemove={removeTransaction} onEdit={setEditingId} />
+          <TransactionList
+            transactions={listed}
+            onRemove={removeTransaction}
+            onEdit={setEditingId}
+            emptyMessage={query.trim() ? `Nenhuma transação encontrada para “${query.trim()}”.` : undefined}
+          >
+            <SearchField value={query} onChange={setQuery} />
+          </TransactionList>
         </div>
       </main>
     </div>
