@@ -97,3 +97,20 @@ test('edita uma transação e recalcula o saldo', async ({ page }) => {
   await expect(page.getByTestId('balance')).toHaveText('-R$ 1.198,80')
   await expect(page.getByRole('heading', { name: 'Nova transação' })).toBeVisible()
 })
+
+test('exporta as transações do período em CSV', async ({ page }) => {
+  await addTransaction(page, { type: 'Receita', description: 'Freela', amount: '800', category: 'Freelance', date: '2026-10-15' })
+  await page.getByLabel('Período').selectOption({ label: 'outubro de 2026' })
+
+  const downloadPromise = page.waitForEvent('download')
+  await page.getByRole('button', { name: 'Exportar CSV' }).click()
+  const download = await downloadPromise
+
+  expect(download.suggestedFilename()).toBe('trocado-2026-10.csv')
+  const stream = await download.createReadStream()
+  const chunks: Buffer[] = []
+  for await (const chunk of stream) chunks.push(chunk as Buffer)
+  const csv = Buffer.concat(chunks).toString('utf-8')
+  expect(csv).toContain('Data;Descrição;Categoria;Tipo;Valor')
+  expect(csv).toContain('15/10/2026;Freela;Freelance;Receita;800,00')
+})
