@@ -285,7 +285,7 @@ select {
   font-stretch: 110%;
 }
 
-.summary-note {
+.summary-stats dd.summary-note {
   display: block;
   font-size: 0.8rem;
   font-weight: 400;
@@ -787,6 +787,103 @@ input[aria-invalid='true'] {
   height: 100%;
   border-radius: 3px;
   background: var(--band);
+}
+
+/* Orçamento */
+
+.budget ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.budget-line + .budget-line {
+  margin-top: 0.9rem;
+  padding-top: 0.9rem;
+  border-top: 1px solid var(--line);
+}
+
+.budget-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  font-size: 0.95rem;
+}
+
+.budget-row small {
+  color: var(--ink-soft);
+}
+
+.budget-line.status-none .budget-row .num {
+  color: var(--ink-soft);
+}
+
+.budget-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.3rem;
+  font-size: 0.8rem;
+}
+
+.budget-change {
+  color: var(--ink-soft);
+}
+
+.budget-status {
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.status-over .budget-status {
+  color: var(--expense);
+}
+
+.status-over .bar {
+  box-shadow: inset 0 0 0 1px var(--expense);
+}
+
+.link-button {
+  margin-left: auto;
+  border: 0;
+  padding: 0.15rem 0;
+  background: none;
+  color: var(--ink-soft);
+  font-size: 0.8rem;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.link-button:hover {
+  color: var(--ink);
+}
+
+.limit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin-top: 0.5rem;
+  font-size: 0.85rem;
+}
+
+.limit-form label {
+  font-weight: 600;
+}
+
+.limit-form-row {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.limit-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+}
+
+.limit-form-actions .link-button {
+  margin-left: 0;
 }
 
 /* Lista */

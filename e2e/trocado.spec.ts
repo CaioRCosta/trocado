@@ -10,12 +10,13 @@ interface NewTransaction {
 
 async function addTransaction(page: Page, tx: NewTransaction) {
   await page.getByRole('button', { name: 'Nova transação' }).click()
-  await page.getByText(tx.type, { exact: true }).click()
-  await page.getByLabel('Descrição').fill(tx.description)
-  await page.getByLabel('Valor (R$)').fill(tx.amount)
-  if (tx.date) await page.getByLabel('Data').fill(tx.date)
-  await page.getByLabel('Categoria').selectOption(tx.category)
-  await page.getByRole('button', { name: /^Adicionar/ }).click()
+  const form = page.getByRole('dialog')
+  await form.getByText(tx.type, { exact: true }).click()
+  await form.getByLabel('Descrição').fill(tx.description)
+  await form.getByLabel('Valor (R$)').fill(tx.amount)
+  if (tx.date) await form.getByLabel('Data').fill(tx.date)
+  await form.getByLabel('Categoria').selectOption(tx.category)
+  await form.getByRole('button', { name: /^Adicionar/ }).click()
 }
 
 const transactionList = (page: Page) => page.getByRole('region', { name: 'Transações' })
@@ -79,6 +80,7 @@ test('filtra resumo e lista pelo mês escolhido', async ({ page }) => {
 test('mostra a participação de cada categoria nas despesas', async ({ page }) => {
   await addTransaction(page, { type: 'Despesa', description: 'Aluguel', amount: '750', category: 'Moradia' })
   await addTransaction(page, { type: 'Despesa', description: 'Mercado', amount: '250', category: 'Alimentação' })
+  await page.getByLabel('Período').selectOption({ label: 'Todos os meses' })
 
   const breakdown = page.getByRole('region', { name: 'Para onde foi o dinheiro' })
   await expect(breakdown.getByRole('listitem').first()).toContainText('Moradia')
@@ -128,4 +130,19 @@ test('mostra o saldo do mês e o histórico nos gráficos', async ({ page }) => 
 
   await expect(page.getByRole('heading', { name: 'Entradas e saídas dos últimos 6 meses' })).toBeVisible()
   await expect(page.getByRole('img', { name: /^Entrou em .*: R\$ 1\.000,00$/ })).toBeVisible()
+})
+
+test('define um limite de orçamento e avisa quando ele estoura', async ({ page }) => {
+  await page.getByRole('button', { name: 'Definir limite de Lazer' }).click()
+  await page.getByLabel('Limite mensal de Lazer (R$)').fill('100')
+  await page.getByRole('button', { name: 'Salvar' }).click()
+
+  await addTransaction(page, { type: 'Despesa', description: 'Show', amount: '130', category: 'Lazer' })
+
+  const budget = page.getByRole('region', { name: 'Orçamento por categoria' })
+  await expect(budget.getByRole('listitem').filter({ hasText: 'Lazer' })).toContainText('Estourou R$ 30,00')
+  await expect(page.getByTestId('budget-total')).toHaveText('130% usado')
+
+  await page.reload()
+  await expect(budget.getByRole('listitem').filter({ hasText: 'Lazer' })).toContainText('de R$ 100,00')
 })

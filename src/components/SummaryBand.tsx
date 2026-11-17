@@ -5,11 +5,13 @@ import type { Totals } from '../domain/summary'
 interface Props {
   totals: Totals
   periodLabel: string
+  /** Frase curta sobre os gastos, como a comparação com o mês anterior. */
+  expenseNote?: string
   /** Indicadores extras exibidos ao lado de entradas e saídas (grupos `<div><dt/><dd/></div>`). */
   children?: ReactNode
 }
 
-export function SummaryBand({ totals, periodLabel, children }: Props) {
+export function SummaryBand({ totals, periodLabel, expenseNote, children }: Props) {
   const tone = totals.balanceCents < 0 ? 'negative' : 'positive'
 
   return (
@@ -34,6 +36,11 @@ export function SummaryBand({ totals, periodLabel, children }: Props) {
           <dd className="expense" data-testid="expense-total">
             {formatCents(totals.expenseCents)}
           </dd>
+          {expenseNote && (
+            <dd className="summary-note" data-testid="expense-note">
+              {expenseNote}
+            </dd>
+          )}
         </div>
         {children}
       </dl>

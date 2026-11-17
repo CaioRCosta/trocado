@@ -36,4 +36,16 @@ describe('SummaryBand', () => {
     expect(screen.getByText('Orçamento')).toBeInTheDocument()
     expect(screen.getByText('40%')).toBeInTheDocument()
   })
+
+  it('mostra a observação sobre os gastos quando informada', () => {
+    render(
+      <SummaryBand
+        totals={{ incomeCents: 0, expenseCents: 100, balanceCents: -100 }}
+        periodLabel="novembro de 2026"
+        expenseNote="R$ 120,00 a menos que em outubro"
+      />,
+    )
+
+    expect(screen.getByTestId('expense-note')).toHaveTextContent('R$ 120,00 a menos que em outubro')
+  })
 })

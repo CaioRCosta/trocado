@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { BudgetPanel } from './components/BudgetPanel'
 import { CategoryBreakdown } from './components/CategoryBreakdown'
 import { ChartPanel } from './components/charts/ChartPanel'
 import { ExportButton } from './components/ExportButton'
@@ -17,8 +18,13 @@ import {
   monthOf,
   sortByDateDesc,
 } from './domain/summary'
+import { budgetLines, budgetOverview } from './domain/budget'
+import { categoryChanges, compareWithPreviousMonth, describeExpenseChange } from './domain/comparison'
 import { toLocalIsoDate } from './domain/date'
+import { formatCents } from './domain/money'
+import { previousMonth } from './domain/month'
 import { searchTransactions } from './domain/search'
+import { useBudgets } from './hooks/useBudgets'
 import { useTransactions, type NewTransaction } from './hooks/useTransactions'
 
 interface Props {
@@ -27,6 +33,7 @@ interface Props {
 
 export default function App({ now }: Props) {
   const { transactions, addTransaction, updateTransaction, removeTransaction } = useTransactions()
+  const { budgets, setCategoryBudget } = useBudgets()
   const [editingId, setEditingId] = useState<string | null>(null)
   const [formOpen, setFormOpen] = useState(false)
   const [query, setQuery] = useState('')
@@ -45,6 +52,8 @@ export default function App({ now }: Props) {
   const totals = useMemo(() => calculateTotals(visible), [visible])
   const categories = useMemo(() => expensesByCategory(visible), [visible])
   const listed = useMemo(() => searchTransactions(visible, query), [visible, query])
+  const expenseNote = month ? describeExpenseChange(compareWithPreviousMonth(transactions, month)) : undefined
+  const budget = month ? budgetOverview(budgetLines(visible, budgets)) : null
   const editing = transactions.find((t) => t.id === editingId)
 
   function openNewForm() {
@@ -79,7 +88,21 @@ export default function App({ now }: Props) {
               Nova transação
             </button>
           </div>
-          <SummaryBand totals={totals} periodLabel={month ? formatMonthLabel(month) : 'todos os meses'} />
+          <SummaryBand
+            totals={totals}
+            periodLabel={month ? formatMonthLabel(month) : 'todos os meses'}
+            expenseNote={expenseNote}
+          >
+            {budget && (
+              <div>
+                <dt>Orçamento</dt>
+                <dd data-testid="budget-total">{budget.percent}% usado</dd>
+                <dd className="summary-note">
+                  {formatCents(budget.spentCents)} de {formatCents(budget.limitCents)}
+                </dd>
+              </div>
+            )}
+          </SummaryBand>
         </div>
       </header>
 
@@ -105,7 +128,17 @@ export default function App({ now }: Props) {
           </TransactionList>
         </div>
         <aside className="dashboard-side">
-          <CategoryBreakdown categories={categories} />
+          {month ? (
+            <BudgetPanel
+              transactions={visible}
+              budgets={budgets}
+              onSetBudget={setCategoryBudget}
+              changes={categoryChanges(transactions, month)}
+              previousMonthName={formatMonthLabel(previousMonth(month)).split(' ')[0]}
+            />
+          ) : (
+            <CategoryBreakdown categories={categories} />
+          )}
         </aside>
       </main>
     </div>

@@ -2,6 +2,7 @@ import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it } from 'vitest'
 import App from './App'
+import { saveBudgets } from './storage/budgetStorage'
 import { saveTransactions } from './storage/transactionStorage'
 
 const now = new Date(2026, 10, 4)
@@ -119,5 +120,65 @@ describe('App', () => {
 
     expect(screen.getByRole('heading', { name: 'Saldo de novembro de 2026' })).toBeInTheDocument()
     expect(screen.queryByText('Cinema')).not.toBeInTheDocument()
+  })
+
+  it('compara os gastos do mês com os do mês anterior', () => {
+    saveTransactions([
+      { id: '1', description: 'Mercado', amountCents: 60000, type: 'expense', category: 'Alimentação', date: '2026-10-10' },
+      { id: '2', description: 'Mercado', amountCents: 48000, type: 'expense', category: 'Alimentação', date: '2026-11-03' },
+    ])
+    render(<App now={now} />)
+
+    expect(screen.getByTestId('expense-note')).toHaveTextContent('R$ 120,00 a menos que em outubro')
+  })
+
+  it('não compara quando todos os meses estão selecionados', async () => {
+    const user = userEvent.setup()
+    render(<App now={now} />)
+
+    await user.selectOptions(screen.getByLabelText('Período'), 'Todos os meses')
+
+    expect(screen.queryByTestId('expense-note')).not.toBeInTheDocument()
+  })
+
+  it('guarda o limite definido no painel de orçamento', async () => {
+    const user = userEvent.setup()
+    const { unmount } = render(<App now={now} />)
+
+    await user.click(screen.getByRole('button', { name: 'Definir limite de Lazer' }))
+    await user.type(screen.getByLabelText('Limite mensal de Lazer (R$)'), '300')
+    await user.click(screen.getByRole('button', { name: 'Salvar' }))
+    unmount()
+    render(<App now={now} />)
+
+    expect(screen.getByRole('button', { name: 'Alterar limite de Lazer' })).toBeInTheDocument()
+  })
+
+  it('mostra o resumo por categoria, sem limites, quando todos os meses estão selecionados', async () => {
+    const user = userEvent.setup()
+    render(<App now={now} />)
+
+    await user.selectOptions(screen.getByLabelText('Período'), 'Todos os meses')
+
+    expect(screen.getByRole('heading', { name: 'Para onde foi o dinheiro' })).toBeInTheDocument()
+    expect(screen.queryByRole('heading', { name: 'Orçamento por categoria' })).not.toBeInTheDocument()
+  })
+
+  it('mostra quanto do orçamento total do mês já foi usado', () => {
+    saveTransactions([
+      { id: '1', description: 'Mercado', amountCents: 60000, type: 'expense', category: 'Alimentação', date: '2026-11-03' },
+      { id: '2', description: 'Show', amountCents: 15000, type: 'expense', category: 'Lazer', date: '2026-11-04' },
+    ])
+    saveBudgets({ Alimentação: 80000, Lazer: 20000 })
+    render(<App now={now} />)
+
+    expect(screen.getByTestId('budget-total')).toHaveTextContent('75% usado')
+    expect(screen.getByText('R$ 750,00 de R$ 1.000,00')).toBeInTheDocument()
+  })
+
+  it('não mostra o orçamento total quando não há limites', () => {
+    render(<App now={now} />)
+
+    expect(screen.queryByTestId('budget-total')).not.toBeInTheDocument()
   })
 })
