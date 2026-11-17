@@ -22,6 +22,11 @@
   --cat-transporte: #6250d6;
   --cat-outros: #8a9597;
 
+  --chart-line: #1f6f70;
+  --chart-income: #1c7c54;
+  --chart-expense: #b83a2b;
+  --chart-grid: #e6ecea;
+
   --font: 'Archivo', system-ui, sans-serif;
 
   color-scheme: light;
@@ -51,6 +56,10 @@
     --cat-educacao: #d55181;
     --cat-transporte: #9085e9;
     --cat-outros: #7d898b;
+    --chart-line: #5fb3b3;
+    --chart-income: #2f9a66;
+    --chart-expense: #e5634f;
+    --chart-grid: #263331;
     color-scheme: dark;
   }
 }
@@ -317,8 +326,13 @@ select {
   padding: 1.25rem;
 }
 
-.panel > h2 {
+.panel > h2,
+.panel-head h2 {
   margin-bottom: 1rem;
+}
+
+.panel-head h2 {
+  margin-bottom: 0;
 }
 
 /* Botões */
@@ -513,6 +527,214 @@ input[aria-invalid='true'] {
     width: 100%;
     border-radius: 16px 16px 0 0;
   }
+}
+
+/* Gráficos */
+
+.chart-plot {
+  position: relative;
+}
+
+.chart svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+  touch-action: pan-y;
+}
+
+.chart svg:focus-visible {
+  outline-offset: 4px;
+  border-radius: 4px;
+}
+
+.chart-grid line {
+  stroke: var(--chart-grid);
+  stroke-width: 1;
+}
+
+.chart-grid line.baseline {
+  stroke: var(--line);
+}
+
+.chart-grid text,
+.chart-axis {
+  fill: var(--ink-soft);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+.balance-line {
+  fill: none;
+  stroke: var(--chart-line);
+  stroke-width: 2;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.balance-area {
+  fill: var(--chart-line);
+  opacity: 0.1;
+}
+
+.balance-dot {
+  fill: var(--chart-line);
+  stroke: var(--surface);
+  stroke-width: 2;
+}
+
+.chart-crosshair line {
+  stroke: var(--ink-soft);
+  stroke-width: 1;
+}
+
+.chart-tooltip {
+  position: absolute;
+  z-index: 1;
+  transform: translate(-50%, calc(-100% - 12px));
+  display: flex;
+  flex-direction: column;
+  padding: 0.4rem 0.6rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  box-shadow: 0 4px 14px rgb(0 0 0 / 0.12);
+  font-size: 0.8rem;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.chart-tooltip strong {
+  font-size: 0.95rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.chart-tooltip span {
+  color: var(--ink-soft);
+}
+
+.panel-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.tabs {
+  display: inline-flex;
+  padding: 3px;
+  border-radius: 999px;
+  background: var(--bg);
+}
+
+.tabs button {
+  border: 0;
+  border-radius: 999px;
+  padding: 0.3rem 0.85rem;
+  background: none;
+  color: var(--ink-soft);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.tabs button[aria-selected='true'] {
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: 0 0 0 1px var(--line);
+}
+
+.chart-legend {
+  display: flex;
+  gap: 1.25rem;
+  margin: 0 0 0.5rem;
+  padding: 0;
+  list-style: none;
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+}
+
+.chart-legend li {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.legend-swatch {
+  width: 0.8rem;
+  height: 0.8rem;
+  border-radius: 3px;
+}
+
+.legend-swatch.income {
+  background: var(--chart-income);
+}
+
+.legend-swatch.expense {
+  background: repeating-linear-gradient(
+    45deg,
+    var(--chart-expense) 0 3px,
+    color-mix(in srgb, var(--chart-expense) 55%, var(--surface)) 3px 5px
+  );
+}
+
+.monthly-bar {
+  outline: none;
+}
+
+.monthly-bar .hit-area {
+  fill: transparent;
+}
+
+.monthly-bar.income path {
+  fill: var(--chart-income);
+}
+
+.monthly-bar.expense path {
+  fill: url(#hatch-expense);
+}
+
+.monthly-bar.is-dimmed path {
+  opacity: 0.45;
+}
+
+.monthly-bar:focus-visible .hit-area {
+  stroke: var(--focus);
+  stroke-width: 2;
+}
+
+.hatch-fill {
+  fill: var(--chart-expense);
+}
+
+.hatch-stripe {
+  stroke: var(--surface);
+  stroke-width: 2;
+  opacity: 0.45;
+}
+
+.chart-table {
+  margin-top: 0.75rem;
+  font-size: 0.85rem;
+}
+
+.chart-table summary {
+  color: var(--ink-soft);
+  cursor: pointer;
+}
+
+.chart-table table {
+  margin-top: 0.5rem;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+}
+
+.chart-table th,
+.chart-table td {
+  padding: 0.2rem 1rem 0.2rem 0;
+  text-align: left;
+  border-bottom: 1px solid var(--line);
 }
 
 /* Categorias */

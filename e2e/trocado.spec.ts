@@ -116,3 +116,16 @@ test('exporta as transações do período em CSV', async ({ page }) => {
   expect(csv).toContain('Data;Descrição;Categoria;Tipo;Valor')
   expect(csv).toContain('15/10/2026;Freela;Freelance;Receita;800,00')
 })
+
+test('mostra o saldo do mês e o histórico nos gráficos', async ({ page }) => {
+  await addTransaction(page, { type: 'Receita', description: 'Bolsa', amount: '1000', category: 'Outros' })
+
+  const chart = page.getByRole('region', { name: /Saldo ao longo de/ })
+  await chart.getByRole('img').focus()
+  await expect(chart.getByRole('status')).toContainText('R$ 1.000,00')
+
+  await page.getByRole('tab', { name: '6 meses' }).click()
+
+  await expect(page.getByRole('heading', { name: 'Entradas e saídas dos últimos 6 meses' })).toBeVisible()
+  await expect(page.getByRole('img', { name: /^Entrou em .*: R\$ 1\.000,00$/ })).toBeVisible()
+})

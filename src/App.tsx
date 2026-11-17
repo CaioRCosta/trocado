@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import { CategoryBreakdown } from './components/CategoryBreakdown'
+import { ChartPanel } from './components/charts/ChartPanel'
 import { ExportButton } from './components/ExportButton'
 import { Modal } from './components/Modal'
 import { MonthFilter } from './components/MonthFilter'
@@ -90,6 +91,7 @@ export default function App({ now }: Props) {
 
       <main className="dashboard">
         <div className="dashboard-main">
+          <ChartPanel transactions={transactions} month={month} today={today} />
           <TransactionList
             transactions={listed}
             onRemove={removeTransaction}
