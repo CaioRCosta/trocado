@@ -1,11 +1,11 @@
 import { render, screen } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
-import { BalanceSummary } from './BalanceSummary'
+import { SummaryBand } from './SummaryBand'
 
-describe('BalanceSummary', () => {
+describe('SummaryBand', () => {
   it('mostra saldo, entradas e saídas formatados', () => {
     render(
-      <BalanceSummary
+      <SummaryBand
         totals={{ incomeCents: 300000, expenseCents: 125050, balanceCents: 174950 }}
         periodLabel="novembro de 2026"
       />,
@@ -18,8 +18,22 @@ describe('BalanceSummary', () => {
   })
 
   it('destaca o saldo negativo', () => {
-    render(<BalanceSummary totals={{ incomeCents: 0, expenseCents: 100, balanceCents: -100 }} periodLabel="todos os meses" />)
+    render(<SummaryBand totals={{ incomeCents: 0, expenseCents: 100, balanceCents: -100 }} periodLabel="todos os meses" />)
 
     expect(screen.getByTestId('balance')).toHaveClass('negative')
+  })
+
+  it('mostra indicadores extras junto com entradas e saídas', () => {
+    render(
+      <SummaryBand totals={{ incomeCents: 0, expenseCents: 0, balanceCents: 0 }} periodLabel="novembro de 2026">
+        <div>
+          <dt>Orçamento</dt>
+          <dd>40%</dd>
+        </div>
+      </SummaryBand>,
+    )
+
+    expect(screen.getByText('Orçamento')).toBeInTheDocument()
+    expect(screen.getByText('40%')).toBeInTheDocument()
   })
 })

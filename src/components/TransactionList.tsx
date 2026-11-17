@@ -29,7 +29,7 @@ export function TransactionList({
   const [confirmingId, setConfirmingId] = useState<string | null>(null)
 
   return (
-    <section className="tx-list" aria-labelledby="list-title">
+    <section className="panel tx-list" aria-labelledby="list-title">
       <div className="tx-list-head">
         <h2 id="list-title">Transações</h2>
         {children}

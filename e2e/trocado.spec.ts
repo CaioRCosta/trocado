@@ -9,6 +9,7 @@ interface NewTransaction {
 }
 
 async function addTransaction(page: Page, tx: NewTransaction) {
+  await page.getByRole('button', { name: 'Nova transação' }).click()
   await page.getByText(tx.type, { exact: true }).click()
   await page.getByLabel('Descrição').fill(tx.description)
   await page.getByLabel('Valor (R$)').fill(tx.amount)
@@ -33,6 +34,7 @@ test('registra uma receita e uma despesa e calcula o saldo', async ({ page }) =>
 })
 
 test('mostra os erros e não registra uma transação inválida', async ({ page }) => {
+  await page.getByRole('button', { name: 'Nova transação' }).click()
   await page.getByLabel('Valor (R$)').fill('abc')
   await page.getByRole('button', { name: 'Adicionar despesa' }).click()
 
@@ -95,7 +97,7 @@ test('edita uma transação e recalcula o saldo', async ({ page }) => {
 
   await expect(transactionList(page).getByText('Academia anual')).toBeVisible()
   await expect(page.getByTestId('balance')).toHaveText('-R$ 1.198,80')
-  await expect(page.getByRole('heading', { name: 'Nova transação' })).toBeVisible()
+  await expect(page.getByRole('dialog')).toBeHidden()
 })
 
 test('exporta as transações do período em CSV', async ({ page }) => {

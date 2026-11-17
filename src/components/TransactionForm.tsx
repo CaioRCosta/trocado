@@ -16,7 +16,7 @@ interface Props {
   today: string
   /** Transação sendo editada; ausente ao cadastrar uma nova. */
   editing?: Transaction
-  onCancelEdit?: () => void
+  onCancel?: () => void
 }
 
 function emptyInput(type: TransactionType, today: string): TransactionInput {
@@ -33,7 +33,7 @@ function inputFrom(transaction: Transaction): TransactionInput {
   }
 }
 
-export function TransactionForm({ onSubmit, today, editing, onCancelEdit }: Props) {
+export function TransactionForm({ onSubmit, today, editing, onCancel }: Props) {
   const [input, setInput] = useState<TransactionInput>(() =>
     editing ? inputFrom(editing) : emptyInput('expense', today),
   )
@@ -42,8 +42,8 @@ export function TransactionForm({ onSubmit, today, editing, onCancelEdit }: Prop
   const title = editing ? 'Editar transação' : 'Nova transação'
 
   useEffect(() => {
-    if (editing) descriptionRef.current?.focus()
-  }, [editing])
+    descriptionRef.current?.focus()
+  }, [])
 
   function update<K extends keyof TransactionInput>(field: K, value: TransactionInput[K]) {
     setInput((current) => ({ ...current, [field]: value }))
@@ -143,9 +143,9 @@ export function TransactionForm({ onSubmit, today, editing, onCancelEdit }: Prop
       <button type="submit" className="primary">
         {editing ? 'Salvar alterações' : `Adicionar ${input.type === 'expense' ? 'despesa' : 'receita'}`}
       </button>
-      {editing && (
-        <button type="button" className="ghost" onClick={onCancelEdit}>
-          Cancelar edição
+      {onCancel && (
+        <button type="button" className="ghost" onClick={onCancel}>
+          {editing ? 'Cancelar edição' : 'Cancelar'}
         </button>
       )}
     </form>

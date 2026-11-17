@@ -98,12 +98,12 @@ describe('TransactionForm', () => {
     })
 
     it('avisa quando o usuário cancela a edição', async () => {
-      const onCancelEdit = vi.fn()
-      render(<TransactionForm onSubmit={vi.fn()} today="2026-11-04" editing={salary} onCancelEdit={onCancelEdit} />)
+      const onCancel = vi.fn()
+      render(<TransactionForm onSubmit={vi.fn()} today="2026-11-04" editing={salary} onCancel={onCancel} />)
 
       await userEvent.click(screen.getByRole('button', { name: 'Cancelar edição' }))
 
-      expect(onCancelEdit).toHaveBeenCalled()
+      expect(onCancel).toHaveBeenCalled()
     })
   })
 })

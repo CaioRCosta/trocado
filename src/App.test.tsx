@@ -11,6 +11,7 @@ describe('App', () => {
     const user = userEvent.setup()
     render(<App now={now} />)
 
+    await user.click(screen.getByRole('button', { name: 'Nova transação' }))
     await user.click(screen.getByLabelText('Receita'))
     await user.type(screen.getByLabelText('Descrição'), 'Salário')
     await user.type(screen.getByLabelText('Valor (R$)'), '3000')
@@ -35,7 +36,7 @@ describe('App', () => {
     expect(screen.getByTestId('balance')).toHaveTextContent('-R$ 50,00')
   })
 
-  it('volta a mostrar todos os meses quando o mês filtrado fica vazio', async () => {
+  it('volta para o mês atual quando o mês filtrado fica vazio', async () => {
     saveTransactions([
       { id: '1', description: 'Cinema', amountCents: 5000, type: 'expense', category: 'Lazer', date: '2026-10-10' },
       { id: '2', description: 'Farmácia', amountCents: 2000, type: 'expense', category: 'Saúde', date: '2026-11-02' },
@@ -47,11 +48,11 @@ describe('App', () => {
     await user.click(screen.getByRole('button', { name: 'Excluir Cinema' }))
     await user.click(screen.getByRole('button', { name: 'Sim, excluir' }))
 
-    expect(screen.getByLabelText('Período')).toHaveValue('all')
+    expect(screen.getByLabelText('Período')).toHaveValue('2026-11')
     expect(screen.getByText('Farmácia')).toBeInTheDocument()
   })
 
-  it('salva a edição e volta o formulário para nova transação', async () => {
+  it('salva a edição e fecha a janela', async () => {
     saveTransactions([
       { id: '1', description: 'Cinema', amountCents: 5000, type: 'expense', category: 'Lazer', date: '2026-11-02' },
     ])
@@ -66,7 +67,7 @@ describe('App', () => {
     const list = screen.getByRole('region', { name: 'Transações' })
     expect(within(list).getByText('Teatro')).toBeInTheDocument()
     expect(within(list).queryByText('Cinema')).not.toBeInTheDocument()
-    expect(screen.getByRole('heading', { name: 'Nova transação' })).toBeInTheDocument()
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
     expect(screen.getByTestId('balance')).toHaveTextContent('-R$ 50,00')
   })
 
@@ -96,5 +97,27 @@ describe('App', () => {
     await user.type(screen.getByLabelText('Buscar'), 'viagem')
 
     expect(screen.getByText('Nenhuma transação encontrada para “viagem”.')).toBeInTheDocument()
+  })
+
+  it('fecha a janela de nova transação sem salvar ao cancelar', async () => {
+    const user = userEvent.setup()
+    render(<App now={now} />)
+
+    await user.click(screen.getByRole('button', { name: 'Nova transação' }))
+    await user.type(screen.getByLabelText('Descrição'), 'Rascunho')
+    await user.click(screen.getByRole('button', { name: 'Cancelar' }))
+
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+    expect(screen.queryByText('Rascunho')).not.toBeInTheDocument()
+  })
+
+  it('abre no mês atual mesmo quando há transações de outros meses', () => {
+    saveTransactions([
+      { id: '1', description: 'Cinema', amountCents: 5000, type: 'expense', category: 'Lazer', date: '2026-10-10' },
+    ])
+    render(<App now={now} />)
+
+    expect(screen.getByRole('heading', { name: 'Saldo de novembro de 2026' })).toBeInTheDocument()
+    expect(screen.queryByText('Cinema')).not.toBeInTheDocument()
   })
 })
