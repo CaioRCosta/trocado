@@ -15,6 +15,8 @@ export interface Transaction {
   category: string
   /** Data no formato ISO `AAAA-MM-DD`. */
   date: string
+  /** Transação que se repete todo mês, como salário ou aluguel. */
+  recurring?: boolean
 }
 
 /** Dados do formulário, ainda como texto digitado pelo usuário. */
@@ -24,6 +26,7 @@ export interface TransactionInput {
   type: TransactionType
   category: string
   date: string
+  recurring?: boolean
 }
 
 export type TransactionErrors = Partial<Record<keyof TransactionInput, string>>
@@ -75,6 +78,7 @@ export function validateTransaction(input: TransactionInput): ValidationResult {
       type: input.type,
       category: input.category,
       date: input.date,
+      ...(input.recurring ? { recurring: true } : {}),
     },
   }
 }
