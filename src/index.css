@@ -27,7 +27,7 @@
   --chart-expense: #b83a2b;
   --chart-grid: #e6ecea;
 
-  --font: 'Archivo', system-ui, sans-serif;
+  --font: 'Archivo Variable', system-ui, sans-serif;
 
   color-scheme: light;
   font-family: var(--font);
@@ -1066,7 +1066,23 @@ input[aria-invalid='true'] {
     margin-top: -0.35rem;
   }
 
+  .summary {
+    margin-top: 1.5rem;
+  }
+
+  .summary-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.9rem 1rem;
+    width: 100%;
+  }
+
   .summary-stats > div {
-    padding: 0 1rem;
+    padding: 0;
+    border-left: 0;
+  }
+
+  .add-button {
+    margin-left: 0;
   }
 }

@@ -14,12 +14,16 @@ Controle simples de receitas e despesas pessoais. Anote o que entra e o que sai,
 
 ## Sobre o sistema
 
-O Trocado é uma aplicação web de página única para registrar a movimentação financeira do dia a dia. Funcionalidades:
+O Trocado é uma aplicação web de página única para registrar a movimentação financeira do dia a dia, organizada como um painel. Funcionalidades:
 
-- **Registrar transações**: receitas e despesas com descrição, valor em reais, data e categoria. O formulário valida os dados e mostra o erro ao lado de cada campo.
-- **Saldo do período**: total que entrou, total que saiu e saldo, com destaque quando o saldo fica negativo.
-- **Filtro por mês**: escolha um mês para ver só as transações, o saldo e o resumo daquele período.
-- **Para onde foi o dinheiro**: despesas agrupadas por categoria, com total, percentual e barra proporcional.
+- **Registrar transações**: receitas e despesas com descrição, valor em reais, data e categoria, numa janela aberta pelo botão "Nova transação". O formulário valida os dados e mostra o erro ao lado de cada campo.
+- **Resumo do mês**: saldo em destaque, total que entrou e que saiu e uso do orçamento, na faixa do topo.
+- **Navegação por mês**: o painel abre no mês atual; as setas levam ao mês anterior ou ao próximo, e há a opção de ver todos os meses.
+- **Gráficos**: saldo acumulado dia a dia no mês e entradas x saídas dos últimos 6 meses, com tooltip (também pelo teclado) e os dados em tabela.
+- **Orçamento por categoria**: limite mensal para cada categoria, com barra de uso e avisos de "perto do limite", "limite atingido" e "estourou".
+- **Comparação com o mês anterior**: quanto se gastou a mais ou a menos no total e em cada categoria.
+- **Contas fixas**: transações marcadas para "repetir todo mês" aparecem como pendentes no mês seguinte e são lançadas com um clique.
+- **Para onde foi o dinheiro**: na visão de todos os meses, despesas agrupadas por categoria, com total e percentual.
 - **Editar transações**: o formulário abre preenchido com os dados da transação escolhida.
 - **Excluir transações** registradas por engano, com confirmação antes de apagar.
 - **Buscar** por descrição ou categoria, sem diferenciar maiúsculas nem acentos.
@@ -39,16 +43,20 @@ O Trocado é uma aplicação web de página única para registrar a movimentaç�
 | [Playwright](https://playwright.dev/) | Testes end-to-end no navegador, rodando sobre o build de produção. |
 | [Oxlint](https://oxc.rs/docs/guide/usage/linter) | Análise estática do código. |
 | [GitHub Actions](https://docs.github.com/pt/actions) | Integração contínua: lint, tipos, testes, cobertura e e2e em Linux, macOS e Windows a cada commit. |
+| [Fontsource](https://fontsource.org/) | Fonte Archivo embutida no próprio site, sem depender de serviços externos. |
+| SVG próprio | Gráficos desenhados com SVG e React, sem biblioteca de gráficos, com paleta validada para daltonismo. |
 | [Vercel](https://vercel.com/) | Hospedagem e entrega contínua: cada push na `main` gera um novo deploy em produção. |
 
 ### Organização do código
 
 ```
 src/
-  domain/      regras de negócio puras (valores, validação, resumos, busca, CSV, datas)
-  storage/     leitura e gravação no localStorage
-  hooks/       estado das transações sincronizado com o armazenamento
+  domain/      regras de negócio puras (valores, validação, resumos, meses, gráficos,
+               orçamento, comparação, recorrência, busca, CSV, datas)
+  storage/     leitura e gravação no localStorage (transações e orçamentos)
+  hooks/       estado das transações e dos orçamentos sincronizado com o armazenamento
   components/  componentes React da interface
+    charts/    gráficos em SVG, escala dos eixos e ajuste à largura da tela
   App.tsx      tela principal
   download.ts  download de arquivos gerados no navegador
 e2e/           testes end-to-end com Playwright

@@ -4,6 +4,7 @@ import { formatCents } from '../../domain/money'
 import { shortMonthLabel } from '../../domain/month'
 import { formatMonthLabel } from '../../domain/summary'
 import { formatAxisValue, niceTicks, scaleLinear } from './chartScale'
+import { useChartWidth } from './useChartWidth'
 
 interface Props {
   points: MonthlyTotalsPoint[]
@@ -16,10 +17,9 @@ const SERIES: { key: Series; label: string; value: (p: MonthlyTotalsPoint) => nu
   { key: 'expense', label: 'Saiu', value: (p) => p.expenseCents },
 ]
 
-const WIDTH = 640
 const HEIGHT = 220
 const MARGIN = { top: 16, right: 8, bottom: 28, left: 64 }
-const BAR_WIDTH = 22
+const MAX_BAR_WIDTH = 22
 const GAP = 2
 const RADIUS = 4
 
@@ -33,15 +33,18 @@ function columnPath(x: number, top: number, bottom: number, width: number): stri
 /** Entradas e saídas por mês em colunas agrupadas, com legenda, tooltip e tabela. */
 export function MonthlyChart({ points }: Props) {
   const [active, setActive] = useState<{ index: number; series: Series } | null>(null)
+  const [plotRef, width] = useChartWidth()
 
   const max = Math.max(...points.flatMap((p) => [p.incomeCents, p.expenseCents]))
   const ticks = niceTicks(0, max)
   const top = ticks[ticks.length - 1]
   const y = scaleLinear(0, top, HEIGHT - MARGIN.bottom, MARGIN.top)
-  const slot = (WIDTH - MARGIN.left - MARGIN.right) / points.length
+  const slot = (width - MARGIN.left - MARGIN.right) / points.length
+  // Nunca preenche o espaço todo: sobra ar entre os grupos de colunas.
+  const barWidth = Math.min(MAX_BAR_WIDTH, (slot * 0.7 - GAP) / 2)
   const center = (i: number) => MARGIN.left + slot * i + slot / 2
   const barX = (i: number, series: Series) =>
-    series === 'income' ? center(i) - BAR_WIDTH - GAP / 2 : center(i) + GAP / 2
+    series === 'income' ? center(i) - barWidth - GAP / 2 : center(i) + GAP / 2
 
   const activePoint = active ? points[active.index] : null
   const activeSeries = active ? SERIES.find((s) => s.key === active.series) : undefined
@@ -56,9 +59,9 @@ export function MonthlyChart({ points }: Props) {
           </li>
         ))}
       </ul>
-      <div className="chart-plot">
+      <div className="chart-plot" ref={plotRef}>
         <svg
-          viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
+          viewBox={`0 0 ${width} ${HEIGHT}`}
           role="group"
           aria-label="Entradas e saídas por mês"
           onPointerLeave={() => setActive(null)}
@@ -71,7 +74,7 @@ export function MonthlyChart({ points }: Props) {
           </defs>
           {ticks.map((t) => (
             <g key={t} className="chart-grid">
-              <line x1={MARGIN.left} x2={WIDTH - MARGIN.right} y1={y(t)} y2={y(t)} className={t === 0 ? 'baseline' : ''} />
+              <line x1={MARGIN.left} x2={width - MARGIN.right} y1={y(t)} y2={y(t)} className={t === 0 ? 'baseline' : ''} />
               <text x={MARGIN.left - 8} y={y(t)} dy="0.32em" textAnchor="end">
                 {formatAxisValue(t, top)}
               </text>
@@ -99,7 +102,7 @@ export function MonthlyChart({ points }: Props) {
                       width={slot / 2}
                       height={HEIGHT - MARGIN.top - MARGIN.bottom}
                     />
-                    <path d={columnPath(barX(i, s.key), y(s.value(p)), y(0), BAR_WIDTH)} />
+                    <path d={columnPath(barX(i, s.key), y(s.value(p)), y(0), barWidth)} />
                   </g>
                 )
               })}
@@ -114,7 +117,7 @@ export function MonthlyChart({ points }: Props) {
             className="chart-tooltip"
             role="status"
             style={{
-              left: `${((barX(active.index, active.series) + BAR_WIDTH / 2) / WIDTH) * 100}%`,
+              left: `${((barX(active.index, active.series) + barWidth / 2) / width) * 100}%`,
               top: `${(y(activeSeries.value(activePoint)) / HEIGHT) * 100}%`,
             }}
           >
