@@ -67,4 +67,10 @@ describe('TransactionList', () => {
 
     expect(onEdit).toHaveBeenCalledWith('r1')
   })
+
+  it('identifica as transações que se repetem todo mês', () => {
+    render(<TransactionList transactions={[{ ...rent, recurring: true }]} onRemove={() => {}} onEdit={() => {}} />)
+
+    expect(screen.getByText('mensal')).toBeInTheDocument()
+  })
 })

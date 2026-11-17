@@ -59,6 +59,28 @@ describe('TransactionForm', () => {
     expect(screen.getByLabelText('Valor (R$)')).toHaveValue('')
   })
 
+  it('envia a transação marcada para repetir todo mês', async () => {
+    const { onSubmit, user } = setup()
+
+    await user.type(screen.getByLabelText('Descrição'), 'Aluguel')
+    await user.type(screen.getByLabelText('Valor (R$)'), '1800')
+    await user.selectOptions(screen.getByLabelText('Categoria'), 'Moradia')
+    await user.click(screen.getByLabelText(/Repetir todo mês/))
+    await user.click(screen.getByRole('button', { name: 'Adicionar despesa' }))
+
+    expect(onSubmit).toHaveBeenCalledWith(expect.objectContaining({ description: 'Aluguel', recurring: true }))
+  })
+
+  it('não marca como recorrente quando a opção fica desmarcada', async () => {
+    const { onSubmit, user } = setup()
+
+    await user.type(screen.getByLabelText('Descrição'), 'Pizza')
+    await user.type(screen.getByLabelText('Valor (R$)'), '80')
+    await user.click(screen.getByRole('button', { name: 'Adicionar despesa' }))
+
+    expect(onSubmit.mock.calls[0][0]).not.toHaveProperty('recurring')
+  })
+
   describe('no modo de edição', () => {
     const salary: Transaction = {
       id: 's1',
@@ -77,6 +99,13 @@ describe('TransactionForm', () => {
       expect(screen.getByLabelText('Valor (R$)')).toHaveValue('4500,00')
       expect(screen.getByLabelText('Receita')).toBeChecked()
       expect(screen.getByLabelText('Descrição')).toHaveFocus()
+      expect(screen.getByLabelText(/Repetir todo mês/)).not.toBeChecked()
+    })
+
+    it('mostra marcada a opção de repetir de uma transação recorrente', () => {
+      render(<TransactionForm onSubmit={vi.fn()} today="2026-11-04" editing={{ ...salary, recurring: true }} />)
+
+      expect(screen.getByLabelText(/Repetir todo mês/)).toBeChecked()
     })
 
     it('envia os dados alterados', async () => {

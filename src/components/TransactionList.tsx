@@ -41,7 +41,10 @@ export function TransactionList({
           {transactions.map((t) => (
             <li key={t.id} className={t.type}>
               <div className="tx-main">
-                <span className="tx-description">{t.description}</span>
+                <span className="tx-description">
+                  {t.description}
+                  {t.recurring && <span className="tag">mensal</span>}
+                </span>
                 <span className="tx-meta">
                   {t.category}, {formatDay(t.date)}
                 </span>

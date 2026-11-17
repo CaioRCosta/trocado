@@ -5,6 +5,7 @@ import { ChartPanel } from './components/charts/ChartPanel'
 import { ExportButton } from './components/ExportButton'
 import { Modal } from './components/Modal'
 import { MonthFilter } from './components/MonthFilter'
+import { RecurringNotice } from './components/RecurringNotice'
 import { SearchField } from './components/SearchField'
 import { SummaryBand } from './components/SummaryBand'
 import { TransactionForm } from './components/TransactionForm'
@@ -23,6 +24,7 @@ import { categoryChanges, compareWithPreviousMonth, describeExpenseChange } from
 import { toLocalIsoDate } from './domain/date'
 import { formatCents } from './domain/money'
 import { previousMonth } from './domain/month'
+import { launchInMonth, pendingRecurring } from './domain/recurring'
 import { searchTransactions } from './domain/search'
 import { useBudgets } from './hooks/useBudgets'
 import { useTransactions, type NewTransaction } from './hooks/useTransactions'
@@ -53,6 +55,7 @@ export default function App({ now }: Props) {
   const categories = useMemo(() => expensesByCategory(visible), [visible])
   const listed = useMemo(() => searchTransactions(visible, query), [visible, query])
   const expenseNote = month ? describeExpenseChange(compareWithPreviousMonth(transactions, month)) : undefined
+  const pending = useMemo(() => (month ? pendingRecurring(transactions, month) : []), [transactions, month])
   const budget = month ? budgetOverview(budgetLines(visible, budgets)) : null
   const editing = transactions.find((t) => t.id === editingId)
 
@@ -128,6 +131,13 @@ export default function App({ now }: Props) {
           </TransactionList>
         </div>
         <aside className="dashboard-side">
+          {month && (
+            <RecurringNotice
+              pending={pending}
+              monthName={formatMonthLabel(month).split(' ')[0]}
+              onLaunch={(sources) => launchInMonth(sources, month).forEach(addTransaction)}
+            />
+          )}
           {month ? (
             <BudgetPanel
               transactions={visible}

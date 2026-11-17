@@ -181,4 +181,20 @@ describe('App', () => {
 
     expect(screen.queryByTestId('budget-total')).not.toBeInTheDocument()
   })
+
+  it('lança as contas fixas do mês anterior no mês atual', async () => {
+    saveTransactions([
+      { id: '1', description: 'Aluguel', amountCents: 180000, type: 'expense', category: 'Moradia', date: '2026-10-06', recurring: true },
+      { id: '2', description: 'Salário', amountCents: 520000, type: 'income', category: 'Salário', date: '2026-10-05', recurring: true },
+    ])
+    const user = userEvent.setup()
+    render(<App now={now} />)
+
+    await user.click(screen.getByRole('button', { name: 'Lançar todas (2)' }))
+
+    expect(screen.queryByRole('heading', { name: /Contas fixas/ })).not.toBeInTheDocument()
+    expect(screen.getByTestId('balance')).toHaveTextContent('R$ 3.400,00')
+    const list = screen.getByRole('region', { name: 'Transações' })
+    expect(within(list).getByText('06/11/2026', { exact: false })).toBeInTheDocument()
+  })
 })

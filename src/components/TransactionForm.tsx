@@ -30,6 +30,7 @@ function inputFrom(transaction: Transaction): TransactionInput {
     type: transaction.type,
     category: transaction.category,
     date: transaction.date,
+    recurring: transaction.recurring === true,
   }
 }
 
@@ -139,6 +140,16 @@ export function TransactionForm({ onSubmit, today, editing, onCancel }: Props) {
           ))}
         </select>
       </Field>
+
+      <label className="check-field">
+        <input
+          type="checkbox"
+          checked={input.recurring === true}
+          onChange={(e) => update('recurring', e.target.checked)}
+        />
+        Repetir todo mês
+        <small>Para contas fixas, como salário ou aluguel.</small>
+      </label>
 
       <button type="submit" className="primary">
         {editing ? 'Salvar alterações' : `Adicionar ${input.type === 'expense' ? 'despesa' : 'receita'}`}

@@ -6,6 +6,7 @@ interface NewTransaction {
   amount: string
   category: string
   date?: string
+  recurring?: boolean
 }
 
 async function addTransaction(page: Page, tx: NewTransaction) {
@@ -16,6 +17,7 @@ async function addTransaction(page: Page, tx: NewTransaction) {
   await form.getByLabel('Valor (R$)').fill(tx.amount)
   if (tx.date) await form.getByLabel('Data').fill(tx.date)
   await form.getByLabel('Categoria').selectOption(tx.category)
+  if (tx.recurring) await form.getByLabel(/Repetir todo mês/).check()
   await form.getByRole('button', { name: /^Adicionar/ }).click()
 }
 
@@ -145,4 +147,32 @@ test('define um limite de orçamento e avisa quando ele estoura', async ({ page 
 
   await page.reload()
   await expect(budget.getByRole('listitem').filter({ hasText: 'Lazer' })).toContainText('de R$ 100,00')
+})
+
+/** Data no mês anterior ao atual, no dia informado (formato do campo de data). */
+function dayInPreviousMonth(day: number): string {
+  const date = new Date()
+  date.setDate(1)
+  date.setMonth(date.getMonth() - 1)
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`
+}
+
+test('lança no mês atual uma conta fixa do mês anterior', async ({ page }) => {
+  await addTransaction(page, {
+    type: 'Despesa',
+    description: 'Aluguel',
+    amount: '1800',
+    category: 'Moradia',
+    date: dayInPreviousMonth(6),
+    recurring: true,
+  })
+
+  const notice = page.getByRole('region', { name: /Contas fixas para lançar/ })
+  await expect(notice).toContainText('Aluguel')
+  await notice.getByRole('button', { name: /Lançar Aluguel/ }).click()
+
+  await expect(notice).toBeHidden()
+  await expect(transactionList(page).getByText('Aluguel')).toBeVisible()
+  await expect(transactionList(page).getByText('mensal')).toBeVisible()
+  await expect(page.getByTestId('balance')).toHaveText('-R$ 1.800,00')
 })
