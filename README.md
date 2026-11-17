@@ -8,9 +8,9 @@ Controle simples de receitas e despesas pessoais. Anote o que entra e o que sai,
 
 ## Integrantes
 
-- Caio
-- Luiz
-- Felipe
+- Caio Rodrigues Costa
+- Luiz Felipe Lima Costa
+- Felipe Dias de Souza Martins
 
 ## Sobre o sistema
 
@@ -63,18 +63,6 @@ e2e/           testes end-to-end com Playwright
 ```
 
 As regras de negócio ficam separadas da interface, em funções puras, o que facilita testá-las diretamente pela API pública de cada módulo.
-
-## Uso de IA
-
-O projeto foi desenvolvido com apoio do **Claude (Anthropic)**, usado como assistente de programação no app Claude. A IA contribuiu para:
-
-- propor o tema, a arquitetura em camadas (domínio, armazenamento, hooks, componentes) e a escolha das ferramentas;
-- escrever o código inicial dos módulos, componentes e estilos;
-- escrever os testes de unidade e end-to-end, seguindo boas práticas (testes pela API pública, foco em comportamento, nomes descritivos, um comportamento por teste);
-- configurar o Vitest, a cobertura, o Playwright e o workflow do GitHub Actions;
-- revisar a interface por capturas de tela e corrigir problemas de layout encontrados.
-
-Todo o código gerado foi revisado, executado e testado pelo grupo antes de cada commit. Decisões de produto e a validação final do funcionamento ficaram com os integrantes.
 
 ## Execução dos testes
 
