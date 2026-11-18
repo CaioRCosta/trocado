@@ -27,7 +27,7 @@
   --chart-expense: #b83a2b;
   --chart-grid: #e6ecea;
 
-  --font: 'Archivo Variable', system-ui, sans-serif;
+  --font: 'Nunito Variable', system-ui, sans-serif;
 
   color-scheme: light;
   font-family: var(--font);
@@ -85,7 +85,6 @@ h2 {
 h2 {
   font-size: 1.05rem;
   font-weight: 700;
-  font-stretch: 108%;
 }
 
 .num,
@@ -148,7 +147,6 @@ select {
 .brand {
   font-size: 1.5rem;
   font-weight: 800;
-  font-stretch: 115%;
   letter-spacing: -0.01em;
 }
 
@@ -240,7 +238,6 @@ select {
 .summary-label {
   font-size: 1rem;
   font-weight: 400;
-  font-stretch: 100%;
   color: var(--band-soft);
 }
 
@@ -248,8 +245,7 @@ select {
   margin: 0.2rem 0 0;
   font-size: clamp(2.75rem, 8vw, 4.75rem);
   font-weight: 800;
-  font-stretch: 118%;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.02em;
   line-height: 1;
 }
 
@@ -282,14 +278,12 @@ select {
   margin: 0;
   font-size: 1.35rem;
   font-weight: 700;
-  font-stretch: 110%;
 }
 
 .summary-stats dd.summary-note {
   display: block;
   font-size: 0.8rem;
   font-weight: 400;
-  font-stretch: 100%;
   color: var(--band-soft);
 }
 

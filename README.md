@@ -43,7 +43,7 @@ O Trocado é uma aplicação web de página única para registrar a movimentaç�
 | [Playwright](https://playwright.dev/) | Testes end-to-end no navegador, rodando sobre o build de produção. |
 | [Oxlint](https://oxc.rs/docs/guide/usage/linter) | Análise estática do código. |
 | [GitHub Actions](https://docs.github.com/pt/actions) | Integração contínua: lint, tipos, testes, cobertura e e2e em Linux, macOS e Windows a cada commit. |
-| [Fontsource](https://fontsource.org/) | Fonte Archivo embutida no próprio site, sem depender de serviços externos. |
+| [Fontsource](https://fontsource.org/) | Fonte Nunito embutida no próprio site, sem depender de serviços externos. |
 | SVG próprio | Gráficos desenhados com SVG e React, sem biblioteca de gráficos, com paleta validada para daltonismo. |
 | [Vercel](https://vercel.com/) | Hospedagem e entrega contínua: cada push na `main` gera um novo deploy em produção. |
 
